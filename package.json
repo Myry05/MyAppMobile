@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "lucide-react": "^0.525.0",
+    "react-native": "^0.80.1"
+  },
+  "devDependencies": {
+    "@react-native-community/cli": "^18.0.0"
+  }
+}
