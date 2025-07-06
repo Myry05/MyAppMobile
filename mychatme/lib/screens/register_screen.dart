@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mychatme/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mychatme/screens/verify_email_screen.dart';
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,7 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   String selectedRole = 'user';
 
-  void handleRegister() {
+ /* void handleRegister() {
     if (_formKey.currentState!.validate()) {
       // Aquí se puede agregar lógica para guardar usuario (BD/Firebase)
 
@@ -33,7 +36,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       );
     }
+  }*/
+  //Autenticacion cuenta
+   void handleRegister() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Las contraseñas no coinciden')),
+      );
+      return;
+    }
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      await userCredential.user?.sendEmailVerification();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Correo de verificación enviado')),
+      );
+
+      // Navegar a pantalla para verificar email
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => VerifyEmailScreen()),
+      );
+
+    } on FirebaseAuthException catch (e) {
+      String message = "Error al registrar usuario";
+      if (e.code == 'email-already-in-use') {
+        message = "El correo ya está en uso";
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 onPressed: handleRegister,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.purple,
+                  backgroundColor: const Color.fromARGB(255, 169, 117, 179),
                 ),
                 child: const Text("Crear cuenta"),
               ),

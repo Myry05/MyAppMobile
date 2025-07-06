@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mychatme/screens/home_screen.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mychatme/screens/register_screen.dart';
+import 'package:mychatme/services/auth_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,35 +17,61 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  /*void handleLogin() {
+  void handleLogin() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
-    // Aquí puedes agregar lógica de autenticación
 
-    print("Login con: $email y $password");
-  }*/
-  void handleLogin() {
-  String email = _emailController.text.trim();
-  String password = _passwordController.text.trim();
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-  // Simulamos autenticación básica (puedes luego usar Firebase)
-  if (email.isNotEmpty && password.isNotEmpty) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const HomeScreen(
-          userName: "Miriam Torres", // Aquí puedes usar el nombre real
-          userRole: "admin", // Puedes usar "user" también
+      print("Usuario autenticado: ${userCredential.user?.email}");
+      // Navegar a HomeScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(
+            userName: userCredential.user?.email ?? 'Usuario',
+            userRole: 'user', // O administra el rol 
+          ),
         ),
-      ),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Por favor, ingresa tus credenciales")),
-    );
+      );
+    } on FirebaseAuthException catch (e) {
+      String message = "Error en la autenticación";
+      if (e.code == 'user-not-found') {
+        message = "No existe usuario con ese correo.";
+      } else if (e.code == 'wrong-password') {
+        message = "Contraseña incorrecta.";
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    }
   }
-}
 
+  void handleGoogleSignIn() async {
+    final userCredential = await AuthService().signInWithGoogle();
+  
+    if (userCredential != null) {
+      final user = userCredential.user!;
+      final name = user.displayName ?? "Usuario Google";
+      final role = "user"; //roles
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HomeScreen(
+            userName: name,
+            userRole: role,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Inicio de sesión con Google fallido")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +93,27 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
+
+            const SizedBox(height: 16),
+
+             // Botón Google
+            ElevatedButton.icon(
+              onPressed: handleGoogleSignIn,
+              icon: SvgPicture.asset(
+                'assets/images/google_logo.svg',
+                height: 24,
+                width: 24,
+              ),
+              label: const Text("Iniciar con Google"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+              ),
+            ),
+
             const SizedBox(height: 24),
 
             // Email
@@ -87,14 +137,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 labelText: "Contraseña",
                 prefixIcon: const Icon(Icons.lock),
                 suffixIcon: IconButton(
-                  icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility),
-                  onPressed: () => setState(() => showPassword = !showPassword),
+                  icon: Icon(
+                      showPassword ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () =>
+                      setState(() => showPassword = !showPassword),
                 ),
                 border: const OutlineInputBorder(),
               ),
             ),
 
             const SizedBox(height: 8),
+
             TextButton(
               onPressed: () {
                 // lógica para recuperar contraseña
@@ -103,26 +156,35 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             const SizedBox(height: 16),
+
+            // Botón iniciar sesión con correo y contraseña
             ElevatedButton(
               onPressed: handleLogin,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.purple,
+                backgroundColor: const Color.fromARGB(255, 169, 117, 179),
               ),
               child: const Text("Iniciar sesión"),
             ),
 
             const SizedBox(height: 24),
+
+            // Link a registro
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text("¿No tienes una cuenta?"),
                 TextButton(
                   onPressed: () {
-                    // Navegar a registro
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const RegisterScreen(),
+                      ),
+                    );
                   },
                   child: const Text("Regístrate"),
-                )
+                ),
               ],
             )
           ],
