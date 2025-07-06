@@ -19,13 +19,13 @@ class _MyAppState extends State<MyApp> {
 
   final Map<Language, Map<String, String>> texts = {
     Language.es: {
-      'welcome': 'Bienvenido a ChatMe',
+      'welcome': 'Bienvenido',
       'login': 'Iniciar Sesión',
       'register': 'Registrarse',
       'language': 'Idioma',
     },
     Language.en: {
-      'welcome': 'Welcome to ChatMe',
+      'welcome': 'Welcome',
       'login': 'Login',
       'register': 'Register',
       'language': 'Language',

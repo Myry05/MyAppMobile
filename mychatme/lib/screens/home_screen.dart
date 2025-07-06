@@ -18,17 +18,37 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Bienvenido'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // Navegar a configuración
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Abrir configuración")),
-              );
-            },
-          )
-        ],
+          actions: [
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                if (value == 'logout') {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                } else if (value == 'settings') {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Abrir configuración")),
+                  );
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem(
+                  value: 'settings',
+                  child: ListTile(
+                    leading: Icon(Icons.settings),
+                    title: Text('Configuración'),
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'logout',
+                  child: ListTile(
+                    leading: Icon(Icons.logout),
+                    title: Text('Cerrar sesión'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
