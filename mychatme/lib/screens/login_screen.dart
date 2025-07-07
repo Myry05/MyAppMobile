@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mychatme/screens/register_screen.dart';
 import 'package:mychatme/services/auth_service.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mychatme/screens/forgot_password_screen.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -151,6 +153,10 @@ class _LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: () {
                 // lógica para recuperar contraseña
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                );
               },
               child: const Text("¿Olvidaste tu contraseña?"),
             ),
