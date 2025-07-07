@@ -1,5 +1,7 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:mychatme/screens/change_password_screen.dart';
+
 
 class HomeScreen extends StatelessWidget {
   final String userName;
@@ -28,8 +30,15 @@ class HomeScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Abrir configuración")),
                   );
+                  //agregar cambio de contrseña
+                } else if (value == 'change_password') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
+                  );
                 }
               },
+
               itemBuilder: (BuildContext context) => [
                 const PopupMenuItem(
                   value: 'settings',
@@ -38,6 +47,15 @@ class HomeScreen extends StatelessWidget {
                     title: Text('Configuración'),
                   ),
                 ),
+                //Cambiar password
+                const PopupMenuItem(
+                  value: 'change_password',
+                  child: ListTile(
+                    leading: Icon(Icons.lock_reset),
+                    title: Text('Cambiar contraseña'),
+                  ),
+                ),
+                //Cerrar sesion
                 const PopupMenuItem(
                   value: 'logout',
                   child: ListTile(
