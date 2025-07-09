@@ -1,0 +1,32 @@
+enum Language { es, en }
+
+class AppLocalizations {
+  final Language lang;
+
+  AppLocalizations(this.lang);
+
+  static final Map<Language, Map<String, String>> _texts = {
+    Language.es: {
+      'welcome': 'Bienvenido',
+      'login': 'Iniciar Sesión',
+      'register': 'Registrarse',
+      'email': 'Correo electrónico',
+      'password': 'Contraseña',
+      'forgot_password': '¿Olvidaste tu contraseña?',
+      'language': 'Idioma',
+    },
+    Language.en: {
+      'welcome': 'Welcome',
+      'login': 'Login',
+      'register': 'Register',
+      'email': 'Email',
+      'password': 'Password',
+      'forgot_password': 'Forgot your password?',
+      'language': 'Language',
+    },
+  };
+
+  String get(String key) {
+    return _texts[lang]?[key] ?? key;
+  }
+}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mychatme/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mychatme/screens/verify_email_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class RegisterScreen extends StatefulWidget {
@@ -57,6 +58,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       await userCredential.user?.sendEmailVerification();
+
+      //Agregar usuario a Firestone
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+      'uid': userCredential.user!.uid,
+      'name': _nameController.text.trim(),
+      'email': email,
+      'role': selectedRole,
+      'createdAt': Timestamp.now(),
+    });
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Correo de verificación enviado')),

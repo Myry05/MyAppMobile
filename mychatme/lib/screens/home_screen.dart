@@ -1,6 +1,7 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:mychatme/screens/change_password_screen.dart';
+import 'package:mychatme/screens/contacts_screen.dart'; // contactos
 
 
 class HomeScreen extends StatelessWidget {
@@ -124,9 +125,14 @@ class HomeScreen extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 ElevatedButton(
-                  onPressed: () {
+                  /*onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Abrir Chat")),
+                    );*/
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ContactsScreen()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
